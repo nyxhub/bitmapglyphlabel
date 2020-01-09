@@ -20,7 +20,7 @@ public enum BitmapGlyphJustification {
 }
 
 public class BitmapGlyphLabel: SKNode {
-    public var text: String {
+    public var text: String? {
         didSet {
             if text != oldValue {
                 updateLabel()
@@ -69,12 +69,15 @@ public class BitmapGlyphLabel: SKNode {
     public private(set) var totalSize: CGSize = CGSize.zero
     public private(set) var font: BitmapGlyphFont
     
-    public init(text: String, font: BitmapGlyphFont) {
+    public init(text: String?, font: BitmapGlyphFont) {
         self.font = font
         self.text = text
-        color = .clear
+        color = .white
         
         super.init()
+        
+        updateLabel()
+        justifyText()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -82,6 +85,9 @@ public class BitmapGlyphLabel: SKNode {
     }
     
     func justifyText() {
+        guard let text = text else {
+            return
+        }
         var shift = CGPoint.zero
         
         switch horizontalAlignment {
@@ -143,6 +149,10 @@ public class BitmapGlyphLabel: SKNode {
     }
     
     func updateLabel() {
+        guard let text = text else {
+            return
+        }
+        
         var lastCharId = "0"
         var size = CGSize.zero
         var pos = CGPoint.zero
@@ -172,12 +182,13 @@ public class BitmapGlyphLabel: SKNode {
         var realCharCount = 0
         
         for i in 0 ..< text.count {
-            let char = text[0]
+            var char = text[i]
             if char == "\n" {
                 pos.y -= font.lineHeight / scaleFactor
                 size.height += font.lineHeight / scaleFactor
                 pos.x = 0
             } else {
+                char = String(char.unicodeScalars[char.startIndex].value)
                 //re-use existing SKSpriteNode and re-assign the correct texture
                 if realCharCount < children.count {
                     letterSprite = children[realCharCount] as! SKSpriteNode

@@ -9,7 +9,7 @@ public class BitmapGlyphFont: NSObject, XMLParserDelegate {
     
     private var parser: XMLParser?
     
-    init?(named name: String) {
+    public init?(named name: String) {
         atlas = SKTextureAtlas(named: name)
         
         let fontFile = String(format: "%@%@", name, BitmapGlyphFont.suffixForDevice())
@@ -24,7 +24,7 @@ public class BitmapGlyphFont: NSObject, XMLParserDelegate {
         parser?.parse()
     }
     
-    init?(named name: String, usingAtlas atlas: SKTextureAtlas) {
+    public init?(named name: String, usingAtlas atlas: SKTextureAtlas) {
         self.atlas = atlas
         
         let fontFile = "\(name)\(BitmapGlyphFont.suffixForDevice())"
@@ -78,30 +78,30 @@ public class BitmapGlyphFont: NSObject, XMLParserDelegate {
     {
         switch elementName {
         case "kerning":
-            let first = Int(attributeDict["first"])
-            let second = Int(attributeDict["second"])
-            let amount = CGFloat(attributeDict["amount"])
+            let first = Int(optionalString: attributeDict["first"])
+            let second = Int(optionalString: attributeDict["second"])
+            let amount = CGFloat(optionalString: attributeDict["amount"])
             
             kernings["\(first)/\(second)"] = amount
         case "char":
             let charId = attributeDict["id"] ?? "0"
-            let xAdvance = CGFloat(attributeDict["xadvance"])
-            let xOffset = CGFloat(attributeDict["xoffset"])
-            let yOffset = CGFloat(attributeDict["yoffset"])
+            let xAdvance = CGFloat(optionalString: attributeDict["xadvance"])
+            let xOffset = CGFloat(optionalString: attributeDict["xoffset"])
+            let yOffset = CGFloat(optionalString: attributeDict["yoffset"])
             
             chars["xoffset_\(charId)"] = xOffset
             chars["yoffset_\(charId)"] = yOffset
             chars["xadvance_\(charId)"] = xAdvance
             textures[charId] = texture(charId: charId)
         case "common":
-            lineHeight = CGFloat(Int(attributeDict["lineHeight"]))
+            lineHeight = CGFloat(Int(optionalString: attributeDict["lineHeight"]))
         default: break
         }
     }
 }
 
 extension Int {
-    init(_ optionalString: String?) {
+    init(optionalString: String?) {
         guard let string = optionalString else {
             self = 0
             return
@@ -111,11 +111,12 @@ extension Int {
 }
 
 extension CGFloat {
-    init(_ optionalString: String?) {
-        guard let string = optionalString else {
+    init(optionalString: String?) {
+        guard let string = optionalString, let floatValue = NumberFormatter().number(from: string)?.floatValue else {
             self = 0
             return
         }
-        self = CGFloat(string)
+        
+        self = CGFloat(floatValue)
     }
 }
