@@ -170,8 +170,13 @@ public class BitmapGlyphLabel: SKNode {
         
         // remove unused
         if text.count - linesCount < children.count && children.count > 0 {
+            var toRemove: [SKNode] = []
             for index in stride(from: children.count, to: text.count - linesCount, by: -1) {
-                children[index].removeFromParent()
+                toRemove.append(children[index - 1])
+            }
+            
+            toRemove.forEach { (node) in
+                node.removeFromParent()
             }
         }
         
