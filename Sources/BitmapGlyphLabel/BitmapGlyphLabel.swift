@@ -32,21 +32,21 @@ public class BitmapGlyphLabel: SKNode {
     public var horizontalAlignment: BitmapGlyphHorizontalAlignment = .center {
         didSet {
             if horizontalAlignment != oldValue {
-            justifyText()
+                justifyText()
             }
         }
     }
     public var verticalAlignment: BitmapGlyphVerticalAlignment = .middle {
         didSet {
             if verticalAlignment != oldValue {
-            justifyText()
+                justifyText()
             }
         }
     }
     public var justification: BitmapGlyphJustification = .left {
         didSet {
             if justification != oldValue {
-            justifyText()
+                justifyText()
             }
         }
     }
